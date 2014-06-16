@@ -26,6 +26,7 @@ namespace ISC349.PracticaI
             tokenizer.Add(@"INTO", 11);
             tokenizer.Add(@"VALUES", 12);
             tokenizer.Add(@"[a-zA-Z][a-zA-Z0-9_]*", 13); // variable
+            tokenizer.Add(@"\*", 13);
             tokenizer.Add(@",", 14); 
 
 
