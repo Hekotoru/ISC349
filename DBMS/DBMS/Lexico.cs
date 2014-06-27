@@ -60,18 +60,7 @@ namespace DBMS
                             else
                                 _tokens[_noTokens] = _lexema;
                             break;
-                        //-------------- Automata real--------------
-                        case 2: _tokens[_noTokens] = "real";
-                            break;
-                        //-------------- Automata entero--------------
-                        case 3: _tokens[_noTokens] = "num";
-                            break;
-                        //-------------- Automata cad--------------
-                        case 4: _tokens[_noTokens] = "cad";
-                            break;
-                        //-------------- Automata otros--------------
-                        case 5: _tokens[_noTokens] = _lexema;
-                            break;
+                        
                     }
                     if (noAuto != 0)
                         _lexemas[_noTokens++] = _lexema;

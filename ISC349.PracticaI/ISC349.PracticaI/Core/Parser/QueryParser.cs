@@ -21,15 +21,46 @@ namespace ISC349.PracticaI.Core.Parser
         private void Expression()
         {
             //TODO:Terminar Implementacion
-            if (Lookahead.TokenType == Token.SELECT)
+
+            if (Lookahead.TokenType == Token.CREATE)
             {
+                NextToken();
+                Expression();
+            }
+            else if (Lookahead.TokenType == Token.SELECT)
+            {
+                NextToken();
+                Expression();
+            }
+            else if (Lookahead.TokenType == Token.TABLE)
+            {
+                argument();
+                NextToken();
+                Expression();
+                
             }
             else if (Lookahead.TokenType == Token.INSERT)
             {
+                NextToken();
+                Expression();
             }
-            else if (Lookahead.TokenType == Token.CREATE)
+            else if (Lookahead.TokenType == Token.INTO)
             {
+                NextToken();
+                Expression();
             }
+            else if (Lookahead.TokenType == Token.VALUES)
+            {
+                argument();
+                NextToken();
+                Expression();
+            }
+            else if (Lookahead.TokenType == Token.FROM)
+            {
+                NextToken();
+                Expression();
+            }
+                
         }
 
         private void NextToken()
@@ -39,6 +70,42 @@ namespace ISC349.PracticaI.Core.Parser
                 Lookahead = new Token(Token.TERMINAL, "");
             else
                 Lookahead = Tokens.First();
+        }
+
+        private void argument()
+        {
+           
+            if (Lookahead.TokenType == Token.OPEN_BRACKET)
+            {
+                // argument -> OPEN_BRACKET sum CLOSE_BRACKET
+                NextToken();
+                Expression();
+
+                if (Lookahead.TokenType != Token.CLOSE_BRACKET)
+                    throw new Exception("Closing brackets expected and "
+                      + Lookahead.Sequence + " found instead");
+
+                NextToken();
+            }
+            else
+            {
+                // argument -> value
+                value();
+            }
+        }
+        private void value()
+        {
+            
+            if (Lookahead.TokenType == Token.STRING)
+            {
+                // argument -> VARIABLE
+                NextToken();
+            }
+            else
+            {
+                throw new Exception(
+                  "Unexpected symbol " + Lookahead.Sequence + " found");
+            }
         }
     }
 }
