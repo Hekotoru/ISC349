@@ -30,7 +30,7 @@ namespace ISC349.PracticaI.Core.Parser
                 if (Lookahead.TokenType == Token.TABLE)
                 {
                     NextToken();
-                    Argument();
+                    ArgumentsInBrackets();
                     if (!IsTerminal)
                     {
                         Abort(Lookahead.Sequence);
@@ -44,7 +44,16 @@ namespace ISC349.PracticaI.Core.Parser
             else if (Lookahead.TokenType == Token.SELECT)
             {
                 NextToken();
-                Argument();
+                while (Lookahead.TokenType == Token.STRING || Lookahead.TokenType == Token.VARIABLE)
+                {
+                    Value();
+                    if (Lookahead.TokenType != Token.SEPARATOR){
+                        if(Lookahead.TokenType == Token.FROM) break;
+                        Abort(Lookahead.Sequence);
+                    }
+                    NextToken();
+                }
+
                 if (Lookahead.TokenType == Token.FROM)
                 {
                     NextToken();
@@ -59,11 +68,10 @@ namespace ISC349.PracticaI.Core.Parser
                 {
                     NextToken();
                     Value();
-                    NextToken();
                     if (Lookahead.TokenType == Token.VALUES)
                     {
                         NextToken();
-                        Argument();
+                        ArgumentsInBrackets();
                     }
                     else
                     {
@@ -77,13 +85,8 @@ namespace ISC349.PracticaI.Core.Parser
             }
         }
 
-        private void NextToken()
-        {
-            Tokens.RemoveFirst();
-            Lookahead = Tokens.Count <= 0 ? new Token(Token.TERMINAL, "") : Tokens.First();
-        }
 
-        private void Argument()
+        private void ArgumentsInBrackets()
         {
             if (Lookahead.TokenType == Token.OPEN_BRACKET)
             {
@@ -93,7 +96,11 @@ namespace ISC349.PracticaI.Core.Parser
                     while (Lookahead.TokenType == Token.STRING || Lookahead.TokenType == Token.VARIABLE)
                     {
                         NextToken();
-                        if (Lookahead.TokenType != Token.SEPARATOR) continue;
+                        if (Lookahead.TokenType != Token.SEPARATOR)
+                        {
+                            if (Lookahead.TokenType == Token.CLOSE_BRACKET) break;
+                            Abort(Lookahead.Sequence);
+                        }
                         NextToken();
                         if (!(Lookahead.TokenType == Token.STRING || Lookahead.TokenType == Token.VARIABLE))
                         {
@@ -122,6 +129,12 @@ namespace ISC349.PracticaI.Core.Parser
             {
                 Abort(Lookahead.Sequence);
             }
+        }
+
+        private void NextToken()
+        {
+            Tokens.RemoveFirst();
+            Lookahead = Tokens.Count <= 0 ? new Token(Token.TERMINAL, "") : Tokens.First();
         }
 
         private void Abort(string sequence, string message="Unexpected symbol '{0}' found")
