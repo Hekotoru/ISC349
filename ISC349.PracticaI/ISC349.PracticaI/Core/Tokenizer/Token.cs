@@ -19,6 +19,7 @@ namespace ISC349.PracticaI.Core.Tokenizer
         public static int INTO { get { return 11; } }
         public static int VALUES { get { return 12; } }
         public static int VARIABLE { get { return 13; } }
+        public static int SEPARATOR { get { return 14; } }
 
 
         public int TokenType { get; private set; }

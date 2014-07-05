@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 
 //https://wiki.engr.illinois.edu/download/attachments/218399498/lecture20.pdf?version=2&modificationDate=1365020389000
+using ISC349.PracticaI.Core.Parser;
 using ISC349.PracticaI.Core.Tokenizer;
 
 namespace ISC349.PracticaI
@@ -12,6 +13,7 @@ namespace ISC349.PracticaI
     {
         static void Main(string[] args)
         {
+            var parser = new QueryParser();
             var tokenizer = new Tokenizer();
             tokenizer.Add("=", 1); // equivalencia
             tokenizer.Add(@"\(", 2); // open bracket
@@ -27,12 +29,16 @@ namespace ISC349.PracticaI
             tokenizer.Add(@"VALUES", 12);
             tokenizer.Add(@"[a-zA-Z][a-zA-Z0-9_]*", 13); // variable
             tokenizer.Add(@"\*", 13);
-            tokenizer.Add(@",", 14); 
+            tokenizer.Add(@",", 14);
 
-
+            var currentQuery = "";
             try
             {
-                tokenizer.Tokenize(" CREATE TABLE example ");
+                currentQuery = " CREATE TABLE example ";
+                Console.WriteLine("Caso 1: " + currentQuery);
+                tokenizer.Tokenize(currentQuery);
+                parser.Parse(tokenizer.Tokens.ToList());
+                
                 foreach(var tok in tokenizer.Tokens) {
                     Console.WriteLine(tok.TokenType + " " + tok.Sequence);
                 }
@@ -43,7 +49,11 @@ namespace ISC349.PracticaI
 
             try
             {
-                tokenizer.Tokenize(" SELECT * FROM table WHERE a='SELECT * FROM table ' ");
+                currentQuery = " SELECT * FROM table WHERE a='SELECT * FROM table ' gfujioh";
+                Console.WriteLine("Caso 2: " + currentQuery);
+                tokenizer.Tokenize(currentQuery);
+                parser.Parse(tokenizer.Tokens.ToList());
+                
                 foreach(var tok in tokenizer.Tokens) {
                     Console.WriteLine(tok.TokenType + " " + tok.Sequence);
                 }
@@ -52,10 +62,14 @@ namespace ISC349.PracticaI
             {
                 Console.WriteLine(e.Message);
             }
-
             try
             {
-                tokenizer.Tokenize(" INSERT INTO table VALUES ('valor1df klng klnms gkns dg', 'efgion inwd inwdfp nvalor2')");
+                currentQuery =
+                    " INSERT INTO table VALUES ('valor1df klng klnms gkns dg', 'efgion inwd inwdfp nvalor2')";
+                Console.WriteLine("Caso 3: " + currentQuery);
+                tokenizer.Tokenize(currentQuery);
+                parser.Parse(tokenizer.Tokens.ToList());
+                
                 foreach (var tok in tokenizer.Tokens)
                 {
                     Console.WriteLine(tok.TokenType + " " + tok.Sequence);

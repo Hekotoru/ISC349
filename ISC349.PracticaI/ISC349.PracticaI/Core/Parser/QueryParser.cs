@@ -18,94 +18,115 @@ namespace ISC349.PracticaI.Core.Parser
             Expression();
         }
 
+        private bool IsTerminal {
+            get { return this.Lookahead.TokenType == Token.TERMINAL; }
+        }
+
         private void Expression()
         {
-            //TODO:Terminar Implementacion
-
             if (Lookahead.TokenType == Token.CREATE)
             {
                 NextToken();
-                Expression();
+                if (Lookahead.TokenType == Token.TABLE)
+                {
+                    NextToken();
+                    Argument();
+                    if (!IsTerminal)
+                    {
+                        Abort(Lookahead.Sequence);
+                    }
+                }
+                else
+                {
+                    Abort(Lookahead.Sequence);
+                }
             }
             else if (Lookahead.TokenType == Token.SELECT)
             {
                 NextToken();
-                Expression();
-            }
-            else if (Lookahead.TokenType == Token.TABLE)
-            {
-                argument();
-                NextToken();
-                Expression();
-                
+                Argument();
+                if (Lookahead.TokenType == Token.FROM)
+                {
+                    NextToken();
+                    Value();
+                    Expression();
+                }   
             }
             else if (Lookahead.TokenType == Token.INSERT)
             {
                 NextToken();
-                Expression();
+                if (Lookahead.TokenType == Token.INTO)
+                {
+                    NextToken();
+                    Value();
+                    NextToken();
+                    if (Lookahead.TokenType == Token.VALUES)
+                    {
+                        NextToken();
+                        Argument();
+                    }
+                    else
+                    {
+                        Abort(Lookahead.Sequence);
+                    }
+                }
+                else
+                {
+                    Abort(Lookahead.Sequence);
+                }
             }
-            else if (Lookahead.TokenType == Token.INTO)
-            {
-                NextToken();
-                Expression();
-            }
-            else if (Lookahead.TokenType == Token.VALUES)
-            {
-                argument();
-                NextToken();
-                Expression();
-            }
-            else if (Lookahead.TokenType == Token.FROM)
-            {
-                NextToken();
-                Expression();
-            }
-                
         }
 
         private void NextToken()
         {
             Tokens.RemoveFirst();
-            if (Tokens.Count <= 0)
-                Lookahead = new Token(Token.TERMINAL, "");
-            else
-                Lookahead = Tokens.First();
+            Lookahead = Tokens.Count <= 0 ? new Token(Token.TERMINAL, "") : Tokens.First();
         }
 
-        private void argument()
+        private void Argument()
         {
-           
             if (Lookahead.TokenType == Token.OPEN_BRACKET)
             {
-                // argument -> OPEN_BRACKET sum CLOSE_BRACKET
                 NextToken();
-                Expression();
-
                 if (Lookahead.TokenType != Token.CLOSE_BRACKET)
-                    throw new Exception("Closing brackets expected and "
-                      + Lookahead.Sequence + " found instead");
-
-                NextToken();
+                {
+                    while (Lookahead.TokenType == Token.STRING || Lookahead.TokenType == Token.VARIABLE)
+                    {
+                        NextToken();
+                        if (Lookahead.TokenType != Token.SEPARATOR) continue;
+                        NextToken();
+                        if (!(Lookahead.TokenType == Token.STRING || Lookahead.TokenType == Token.VARIABLE))
+                        {
+                            Abort(Lookahead.Sequence);
+                        }
+                    }
+                    if (Lookahead.TokenType != Token.CLOSE_BRACKET)
+                    {
+                        Abort(Lookahead.Sequence, "Closing brackets expected and {0} found instead");
+                    }
+                }
+                Expression();
             }
             else
             {
-                // argument -> value
-                value();
+                Value();
             }
         }
-        private void value()
+        private void Value()
         {
-            
-            if (Lookahead.TokenType == Token.STRING)
+            if (Lookahead.TokenType == Token.STRING || Lookahead.TokenType == Token.VARIABLE)
             {
-                // argument -> VARIABLE
                 NextToken();
             }
             else
             {
-                throw new Exception(
-                  "Unexpected symbol " + Lookahead.Sequence + " found");
+                Abort(Lookahead.Sequence);
             }
+        }
+
+        private void Abort(string sequence, string message="Unexpected symbol '{0}' found")
+        {
+            throw new Exception( String.Format(message, sequence));
         }
     }
 }
