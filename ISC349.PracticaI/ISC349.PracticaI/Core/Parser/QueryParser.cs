@@ -64,7 +64,11 @@ namespace ISC349.PracticaI.Core.Parser
                         NextToken();
                         ArgumentsWhere();
                     }
-                    Expression();
+                    else
+                    {
+                        Abort(Lookahead.Sequence);
+                    }
+                    //Expression();
                 }   
             }
             else if (Lookahead.TokenType == Token.INSERT)

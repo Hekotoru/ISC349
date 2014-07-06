@@ -49,7 +49,7 @@ namespace ISC349.PracticaI
 
             try
             {
-                currentQuery = " SELECT * FROM table WHERE a='SELECT * FROM table ' gfujioh";
+                currentQuery = " SELECT * FROM table WHERE 'A'='B' 'c'";
                 Console.WriteLine("Caso 2: " + currentQuery);
                 tokenizer.Tokenize(currentQuery);
                 parser.Parse(tokenizer.Tokens.ToList());
