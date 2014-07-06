@@ -64,7 +64,7 @@ namespace ISC349.PracticaI.Core.Parser
                         NextToken();
                         ArgumentsWhere();
                     }
-                    else
+                    else if (Lookahead.TokenType == Token.STRING || Lookahead.TokenType == Token.VARIABLE)
                     {
                         Abort(Lookahead.Sequence);
                     }
@@ -111,6 +111,11 @@ namespace ISC349.PracticaI.Core.Parser
                 }
                     
             }
+            else
+            {
+                Abort(Lookahead.Sequence);
+            }
+            
                 
         }
 
