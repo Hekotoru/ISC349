@@ -58,6 +58,12 @@ namespace ISC349.PracticaI.Core.Parser
                 {
                     NextToken();
                     Value();
+                    if(Lookahead.TokenType == Token.WHERE)
+                    {
+                        /// ArgumentoWhere
+                        NextToken();
+                        ArgumentsWhere();
+                    }
                     Expression();
                 }   
             }
@@ -85,6 +91,24 @@ namespace ISC349.PracticaI.Core.Parser
             }
         }
 
+        private void ArgumentsWhere()
+        {
+            if (Lookahead.TokenType == Token.STRING || Lookahead.TokenType == Token.VARIABLE)
+            {
+                NextToken();
+                if (Lookahead.TokenType == Token.EQUAL)
+                {
+                    NextToken();
+                    Value();
+                }
+                else
+                {
+                    Abort(Lookahead.Sequence);
+                }
+                    
+            }
+                
+        }
 
         private void ArgumentsInBrackets()
         {
