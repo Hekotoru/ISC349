@@ -41,6 +41,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Core\Expression\ExpressionReader.cs" />
+    <Compile Include="Core\Functions\DBMSFunctionsHandler.cs" />
+    <Compile Include="Core\Functions\IHandleDBMSFunctions.cs" />
     <Compile Include="Core\Parser\QueryParser.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

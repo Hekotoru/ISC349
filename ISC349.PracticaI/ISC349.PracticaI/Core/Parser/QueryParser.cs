@@ -30,6 +30,7 @@ namespace ISC349.PracticaI.Core.Parser
                 if (Lookahead.TokenType == Token.TABLE)
                 {
                     NextToken();
+                    Value();
                     ArgumentsInBrackets();
                     if (!IsTerminal)
                     {
@@ -53,23 +54,20 @@ namespace ISC349.PracticaI.Core.Parser
                     }
                     NextToken();
                 }
-
                 if (Lookahead.TokenType == Token.FROM)
                 {
                     NextToken();
                     Value();
                     if(Lookahead.TokenType == Token.WHERE)
                     {
-                        /// ArgumentoWhere
                         NextToken();
                         ArgumentsWhere();
                     }
-                    else if (Lookahead.TokenType == Token.STRING || Lookahead.TokenType == Token.VARIABLE)
+                    else if (Lookahead.TokenType != Token.TERMINAL)
                     {
                         Abort(Lookahead.Sequence);
                     }
-                    //Expression();
-                }   
+                }
             }
             else if (Lookahead.TokenType == Token.INSERT)
             {
@@ -97,26 +95,27 @@ namespace ISC349.PracticaI.Core.Parser
 
         private void ArgumentsWhere()
         {
-            if (Lookahead.TokenType == Token.STRING || Lookahead.TokenType == Token.VARIABLE)
+            while (Lookahead.TokenType == Token.STRING || Lookahead.TokenType == Token.VARIABLE)
             {
                 NextToken();
                 if (Lookahead.TokenType == Token.EQUAL)
                 {
                     NextToken();
-                    Value();
                 }
                 else
                 {
                     Abort(Lookahead.Sequence);
                 }
-                    
+                if (!(Lookahead.TokenType == Token.STRING || Lookahead.TokenType == Token.VARIABLE))
+                {
+                    Abort(Lookahead.Sequence);
+                }
+                NextToken();
+                if (Lookahead.TokenType == Token.SEPARATOR)
+                {
+                    NextToken();
+                }
             }
-            else
-            {
-                Abort(Lookahead.Sequence);
-            }
-            
-                
         }
 
         private void ArgumentsInBrackets()
@@ -145,7 +144,7 @@ namespace ISC349.PracticaI.Core.Parser
                         Abort(Lookahead.Sequence, "Closing brackets expected and {0} found instead");
                     }
                 }
-                Expression();
+                NextToken();
             }
             else
             {

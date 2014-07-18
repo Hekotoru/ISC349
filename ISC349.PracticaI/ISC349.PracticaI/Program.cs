@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 
 //https://wiki.engr.illinois.edu/download/attachments/218399498/lecture20.pdf?version=2&modificationDate=1365020389000
+using ISC349.PracticaI.Core.Expression;
+using ISC349.PracticaI.Core.Functions;
 using ISC349.PracticaI.Core.Parser;
 using ISC349.PracticaI.Core.Tokenizer;
 
@@ -15,6 +17,7 @@ namespace ISC349.PracticaI
         {
             var parser = new QueryParser();
             var tokenizer = new Tokenizer();
+            var expressionReader = new ExpressionReader(new DBMSFunctionsHandler());
             tokenizer.Add("=", 1); // equivalencia
             tokenizer.Add(@"\(", 2); // open bracket
             tokenizer.Add(@"\)", 3); // close bracket
@@ -34,7 +37,7 @@ namespace ISC349.PracticaI
             var currentQuery = "";
             try
             {
-                currentQuery = " CREATE TABLE example ";
+                currentQuery = " CREATE TABLE example (nombre,apellidos,edad)";
                 Console.WriteLine("Caso 1: " + currentQuery);
                 tokenizer.Tokenize(currentQuery);
                 parser.Parse(tokenizer.Tokens.ToList());
@@ -42,6 +45,8 @@ namespace ISC349.PracticaI
                 foreach(var tok in tokenizer.Tokens) {
                     Console.WriteLine(tok.TokenType + " " + tok.Sequence);
                 }
+
+                expressionReader.Read(tokenizer.Tokens);
             }
             catch (Exception e) {
                 Console.WriteLine(e.Message);
@@ -49,7 +54,7 @@ namespace ISC349.PracticaI
 
             try
             {
-                currentQuery = " SELECT * FROM table WHERE";
+                currentQuery = " SELECT * FROM example WHERE '1' = '1'";
                 Console.WriteLine("Caso 2: " + currentQuery);
                 tokenizer.Tokenize(currentQuery);
                 parser.Parse(tokenizer.Tokens.ToList());
@@ -65,7 +70,7 @@ namespace ISC349.PracticaI
             try
             {
                 currentQuery =
-                    " INSERT INTO table VALUES ('valor1df klng klnms gkns dg', 'efgion inwd inwdfp nvalor2')";
+                    " INSERT INTO example VALUES ('Pedro', 'Taveras <3', '25')";
                 Console.WriteLine("Caso 3: " + currentQuery);
                 tokenizer.Tokenize(currentQuery);
                 parser.Parse(tokenizer.Tokens.ToList());
@@ -74,12 +79,12 @@ namespace ISC349.PracticaI
                 {
                     Console.WriteLine(tok.TokenType + " " + tok.Sequence);
                 }
+                expressionReader.Read(tokenizer.Tokens);
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
             }
-
             Console.Read();
         }
     }
